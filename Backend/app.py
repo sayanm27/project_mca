@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import sqlite3
+import utilities
 
 
 app = Flask(__name__)
@@ -35,7 +36,8 @@ def create_user():
 
     #Getting the data from payload
     data = request.get_json()
-
+    key = utilities.load_key()
+    encrypted_pwd = utilities.encrypt_message( data.get("pwd"), key )
 
     #Insert the user with the latest user id according to the test id, name and password given
     with sqlite3.connect(DB_NAME) as conn:
@@ -49,12 +51,15 @@ def create_user():
             }), 401
 
         #Get the last used user id and increment it by 1
-        last_user_id = cursor.execute("SELECT userid FROM Users ORDER BY userid DESC LIMIT 1").fetchone()[0]
+        try:
+            last_user_id = cursor.execute("SELECT userid FROM Users ORDER BY userid DESC LIMIT 1").fetchone()[0]
+        except: 
+            last_user_id = 1000
         current_user_id = last_user_id + 1
 
         #Form the select query with placeholders to prevent SQL injection
         insert_query = "INSERT INTO Users ( userid, pwd, name, role, testid ) VALUES ( ?, ?, ?, ?, ?)"
-        cursor.execute(insert_query, ( str(current_user_id), data.get("pwd"), data.get("name"), NORMAL_USER, data.get("testid") ) )
+        cursor.execute(insert_query, ( str(current_user_id), encrypted_pwd, data.get("name"), NORMAL_USER, data.get("testid") ) )
         conn.commit()
 
         #Verifying creation of user
@@ -74,14 +79,25 @@ def create_user():
 def auth():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
+    key = utilities.load_key()
 
     with sqlite3.connect(DB_NAME) as conn:
 
-        verify_query = "SELECT userid FROM Users WHERE userid = ? AND pwd = ?"
-        cursor = conn.execute(verify_query, ( username, password ))
+        verify_query = "SELECT pwd FROM Users WHERE userid = ? "
+        cursor = conn.execute(verify_query, ( username,  ) )
 
-    if cursor.fetchone() == None:
+    #Decrypt the password and then verify
+    try: 
+        password_fetched = cursor.fetchone()[0]
+    except Exception as e:
         return jsonify({"msg": "Bad credentials"}), 401
+    
+    
+    password_decrypted = utilities.decrypt_message( password_fetched, key )    
+    
+    if password != password_decrypted:
+        return jsonify({"msg": "Bad credentials"}), 401
+
     
     access_token = create_access_token(identity=str(username))
     return jsonify(access_token=access_token)
