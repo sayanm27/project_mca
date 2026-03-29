@@ -1,0 +1,38 @@
+NOTE: first implement backend completely, then move towards frontend
+
+Week 1: 29th March 
+- Decide on database schema
+- Implement authentication login for admin as well as normal user
+- Implement user creation from admin portal 
+- Implement test questions creation from admin portal 
+- Implement fetch on user side for Instructions and questions
+- Learn on opencv and react.js
+
+Week 2: 5th April 
+- Start with openCV face detection 
+- Learn on tab switching 
+- Learn on react.js
+- Read on WebRTC and socketio
+
+Week 3: 12th April
+- Implement frontend for user side 
+- Implement OpenCV face recognition
+- Implement socket.io for real time updates
+- Implement storage of user id in cache
+
+Week 4: 19th April
+- Implement multiple faces detection
+- Implement thresholds for violations and logging for reports
+
+Week 5: 26th April 
+- Integration of frontend and backend fully
+
+
+Week 6: 3rd May 
+- Testing and fixing bugs
+
+Week 7: 10th May 
+- Testing and fixing bugs
+
+Week 8: 17th May 
+- Testing and fixing bugs

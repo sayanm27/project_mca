@@ -1,0 +1,20 @@
+Features
+
+Admin side: 
+- Create userid and password and assign it to a test ID
+- Each userid and password will be tagged to only one test ID
+- Create tests with new test ID 
+- Store questions ( simple only )
+- Access user reports based on user ID
+
+User side: 
+- Login
+- Click picture ( used for detection later )
+- Instructions
+- Start test
+- If site closes ( detect in backend, stop the test ) ( hard to implement )
+- Alerts to be shown 
+- If too many violations, cancel the test 
+- WebRTC and socket.IO  
+
+

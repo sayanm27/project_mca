@@ -1,0 +1,24 @@
+Users
+-userid
+-password ( encrpted format ) 
+-name
+-testid ( will be blank for admin )
+
+Test
+-testid
+-instructions ( separator | and store in one column )
+-questionid
+
+Questions
+-questionid
+-question
+-option1
+-option2
+-option3
+-option4
+
+Violations
+-userid
+-violationtype
+-timestamp
+-severity (will try to implement based on confidence score of ML algorithm)
