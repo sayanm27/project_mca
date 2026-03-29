@@ -1,0 +1,18 @@
+******** USER AUTHORIZATION *********
+/auth -> Used for login / user authentication and returns a JWT 
+
+Payload: 
+{
+    "username": 1001,
+    "password": "Admin"
+}
+
+******** USER CREATION *********
+/create_user -> Used for user creation
+
+Payload: 
+{
+    "name" : "Sayan",
+    "pwd": "test",
+    "testid": "AMC10"
+}

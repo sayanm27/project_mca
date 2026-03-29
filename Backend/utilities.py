@@ -28,19 +28,3 @@ def decrypt_message(encrypted_message, key):
     f = Fernet(key)
     decrypted_message = f.decrypt(encrypted_message).decode() # Decode byte string back to a string
     return decrypted_message
-
-# Demonstration
-if __name__ == "__main__":
-    # Ensure a key exists
-    encryption_key = load_key()
-
-    original_message = "Hello, Python encryption world!"
-    print(f"Original message: {original_message}")
-
-    # Encrypt the message
-    encrypted_msg = encrypt_message(original_message, encryption_key)
-    print(f"Encrypted message (bytes): {encrypted_msg}")
-
-    # Decrypt the message
-    decrypted_msg = decrypt_message(encrypted_msg, encryption_key)
-    print(f"Decrypted message: {decrypted_msg}")
