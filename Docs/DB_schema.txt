@@ -2,10 +2,12 @@ Users
 -userid
 -password ( encrpted format ) 
 -name
+-userrole
 -testid ( will be blank for admin )
 
 Test
 -testid
+-testname
 -instructions ( separator | and store in one column )
 -questionid
 
