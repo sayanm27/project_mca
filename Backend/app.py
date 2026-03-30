@@ -69,6 +69,25 @@ def get_questions():
     }), 400
 
 
+#Used to fetch instructions for a given test id
+@app.route("/get_instruct", methods = ["GET"])
+def get_instruct():
+    testid = request.args.get('testid')
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        instructions_query = "SELECT instructions FROM Test WHERE testid = ?"
+        try: 
+            instructions = cursor.execute(instructions_query, (testid, )).fetchone()[0]
+        except: 
+            return jsonify({
+                "message" : "testid doesn't exist!"
+            }), 400
+
+    inst_list = instructions.split('|')
+    return jsonify({
+        "instructions": inst_list
+    }), 200
+
 """POST CALLS"""
 # Used to create testIDs mapped to a question ID
 @app.route("/create_test", methods = ["POST"])
