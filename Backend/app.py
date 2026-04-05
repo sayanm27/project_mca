@@ -6,9 +6,9 @@ from flask_cors import CORS
 
 
 app = Flask(__name__)
-CORS(app)
 app.config["JWT_SECRET_KEY"] = "45969730"  
 jwt = JWTManager(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 #Constant variables used below
 DB_NAME = "database.db"
@@ -74,12 +74,12 @@ def get_questions():
 #Used to fetch instructions for a given test id
 @app.route("/get_instruct", methods = ["GET"])
 def get_instruct():
-    testid = request.args.get('testid')
+    userid = request.args.get('userid')
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
-        instructions_query = "SELECT instructions FROM Test WHERE testid = ?"
+        instructions_query = "SELECT instructions FROM Test INNER JOIN Users WHERE userid = ?"
         try: 
-            instructions = cursor.execute(instructions_query, (testid, )).fetchone()[0]
+            instructions = cursor.execute(instructions_query, (userid, )).fetchone()[0]
         except: 
             return jsonify({
                 "message" : "testid doesn't exist!"
@@ -251,7 +251,7 @@ def auth():
 
     
     access_token = create_access_token(identity=str(username))
-    return jsonify(access_token=access_token)
+    return jsonify(access_token=access_token, userid=str(username))
 
 # Run the application
 if __name__ == "__main__":
