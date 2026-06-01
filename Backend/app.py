@@ -12,6 +12,7 @@ import threading
 from datetime import timedelta
 from Machine_learning import train
 from Machine_learning import capture_faces
+# from Machine_learning import recognize
 
 
 app = Flask(__name__)
@@ -48,10 +49,11 @@ def get_tests():
 def get_questions():
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
-        testid = request.args.get('testid')
+        # testid = request.args.get('testid')
+        userid = request.args.get('userid')
         try: 
-            questionid_query = "SELECT questionid FROM Test WHERE testid = ?"
-            questionid = cursor.execute(questionid_query, (testid, )).fetchone()[0]
+            questionid_query = "SELECT questionid FROM Test INNER JOIN Users WHERE userid = ?"
+            questionid = cursor.execute(questionid_query, (userid, )).fetchone()[0]
         except: 
             return jsonify({
                 "message": "invalid test id!"
@@ -268,12 +270,20 @@ def auth():
 def capture_face(): 
     #jwt authentication
     current_user = get_jwt_identity()
-    print(current_user)
-
     capture_faces.capture(current_user)
     return jsonify({
         "message": "User registered"
     })
+
+# @app.route("/detect_faces", methods = ["POST"])
+# @jwt_required()
+# def detect_face(): 
+#     #jwt authentication
+#     current_user = get_jwt_identity()
+#     recognize.recognize_faces(current_user)
+#     return jsonify({
+#         "message": "Exam terminated"
+#     })
 
 
 
