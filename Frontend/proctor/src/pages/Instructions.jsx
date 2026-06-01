@@ -252,7 +252,7 @@ const Instructions = () => {
               onClick={handleStartExam}
               disabled={!agreed || registering}
             >
-              <span>{registering ? "Registering Face..." : "Begin Exam"}</span>
+              <span>{registering ? "Registering Face... Look in the camera" : "Begin Exam"}</span>
               {!registering && <span className="btn-arrow">→</span>}
             </button>
           </section>

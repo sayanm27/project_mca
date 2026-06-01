@@ -17,7 +17,8 @@ from Machine_learning import capture_faces
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "45969730"  
 jwt = JWTManager(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+# CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"*": {"origins": "*"}})
 
 #Constant variables used below
 DB_NAME = "database.db"
