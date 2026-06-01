@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Pages — swap Login with your existing component
 import Login from "./pages/Login";
 import Instructions from "./pages/Instructions";
+import Exam from "./pages/Exam";
 // import Exam from "./pages/Exam"; // wire up next
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/instructions" element={<Instructions />} />
             {/* <Route path="/exam" element={<Exam />} /> */}
+            <Route path="/exam" element={<Exam />} />
           </Route>
 
           {/* Fallback */}

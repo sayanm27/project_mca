@@ -1,0 +1,130 @@
+:root {
+  --bg: #0b0e14;
+  --surface: #111520;
+  --surface-2: #171c2b;
+  --border: rgba(255, 255, 255, 0.07);
+  --accent: #4f8ef7;
+  --accent-glow: rgba(79, 142, 247, 0.25);
+  --text-primary: #eef0f6;
+  --text-secondary: #7a8299;
+  --danger: #f75f4f;
+  --radius: 14px;
+  --font: "Times New Roman", Times, serif;
+}
+
+.exam-page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font);
+}
+
+.exam-main {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem;
+}
+
+.exam-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.exam-header h1 {
+  font-size: 2rem;
+}
+
+.btn-end-exam {
+  background: var(--danger);
+  border: none;
+  color: white;
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn-end-exam:hover {
+  opacity: 0.9;
+}
+
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.question-number {
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+}
+
+.question-text {
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option-item:hover {
+  border-color: var(--accent);
+}
+
+.option-item input[type="radio"] {
+  transform: scale(1.15);
+}
+
+.loader-container,
+.error-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.loader-ring {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(79, 142, 247, 0.2);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loader-text {
+  color: var(--text-secondary);
+}
+
+.error-icon {
+  font-size: 3rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
