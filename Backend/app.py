@@ -3,6 +3,15 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 import sqlite3
 import utilities
 from flask_cors import CORS
+from flask_sock import Sock
+import base64
+import numpy as np
+import cv2
+import os
+import threading
+from datetime import timedelta
+from Machine_learning import train
+from Machine_learning import capture_faces
 
 
 app = Flask(__name__)
@@ -252,6 +261,93 @@ def auth():
     
     access_token = create_access_token(identity=str(username))
     return jsonify(access_token=access_token, userid=str(username))
+
+@app.route("/capture_faces", methods = ["POST"])
+@jwt_required()
+def capture_face(): 
+    #jwt authentication
+    current_user = get_jwt_identity()
+    print(current_user)
+
+    capture_faces.capture(current_user)
+    return jsonify({
+        "message": "User registered"
+    })
+
+
+
+
+# # ── WebSocket: face capture ──────────────────────────────────
+# @Sock.route("/ws/capture")
+# def capture(ws):
+#     """
+#     Receives frames from the browser as base64 JPEG strings.
+#     Detects faces and saves up to CAPTURE_COUNT images per user.
+#     Sends back JSON status messages.
+#     """
+#     userid = None
+#     count = 0
+ 
+#     while True:
+#         message = ws.receive()
+#         if message is None:
+#             break
+ 
+#         import json
+#         data = json.loads(message)
+ 
+#         # First message must carry the userid
+#         if userid is None:
+#             userid = data.get("userid")
+#             if not userid:
+#                 ws.send(json.dumps({"type": "error", "message": "userid required"}))
+#                 break
+#             path = f"dataset/{userid}"
+#             os.makedirs(path, exist_ok=True)
+#             ws.send(json.dumps({"type": "status", "message": "Connected. Starting face capture..."}))
+#             continue
+ 
+#         # Subsequent messages carry video frames
+#         if data.get("type") == "frame":
+#             # Decode base64 image
+#             img_data = base64.b64decode(data["frame"].split(",")[1])
+#             np_arr = np.frombuffer(img_data, np.uint8)
+#             frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+ 
+#             if frame is None:
+#                 continue
+ 
+#             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#             faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+ 
+#             for (x, y, w, h) in faces:
+#                 if count >= CAPTURE_COUNT:
+#                     break
+#                 count += 1
+#                 face_img = gray[y:y+h, x:x+w]
+#                 cv2.imwrite(f"dataset/{userid}/{count}.jpg", face_img)
+ 
+#             ws.send(json.dumps({
+#                 "type": "progress",
+#                 "captured": count,
+#                 "total": CAPTURE_COUNT
+#             }))
+ 
+#             if count >= CAPTURE_COUNT:
+#                 ws.send(json.dumps({"type": "capture_done", "message": "Face capture complete. Training model..."}))
+ 
+#                 # Run training in a background thread so WebSocket stays open
+#                 def run_training():
+#                     try:
+#                         train.train_model()
+#                         ws.send(json.dumps({"type": "training_done", "message": "Model trained. You may begin the exam."}))
+#                     except Exception as e:
+#                         ws.send(json.dumps({"type": "error", "message": f"Training failed: {str(e)}"}))
+ 
+#                 threading.Thread(target=run_training, daemon=True).start()
+#                 break
+ 
+
 
 # Run the application
 if __name__ == "__main__":

@@ -14,6 +14,7 @@ const Instructions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [agreed, setAgreed] = useState(false);
+  const [registering, setRegistering] = useState(false);
 
   useEffect(() => {
     const fetchInstructions = async () => {
@@ -32,7 +33,7 @@ const Instructions = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (response.status === 401) {
@@ -48,7 +49,9 @@ const Instructions = () => {
         // Backend returns an array of strings e.g. ["Rule 1", "Rule 2", ...]
         const data = await response.json();
         console.log("Instructions from API:", data);
-        setInstructions(Array.isArray(data.instructions) ? data.instructions : []);
+        setInstructions(
+          Array.isArray(data.instructions) ? data.instructions : [],
+        );
       } catch (err) {
         setError(err.message);
       } finally {
@@ -59,9 +62,37 @@ const Instructions = () => {
     fetchInstructions();
   }, [user, token, navigate, dispatch]);
 
-  const handleStartExam = () => {
-    if (agreed) {
-      navigate("/exam");
+  const handleStartExam = async () => {
+    if (!agreed || registering) return;
+
+    setRegistering(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/capture_faces", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401) {
+        dispatch(logout());
+        navigate("/login");
+        return;
+      }
+
+      const data = await response.json();
+
+      if (response.ok && data.message === "User registered") {
+        navigate("/exam");
+      } else {
+        alert(data.message || "User could not be registered.");
+      }
+    } catch (err) {
+      alert("Unable to connect to server.");
+    } finally {
+      setRegistering(false);
     }
   };
 
@@ -88,7 +119,10 @@ const Instructions = () => {
           <div className="error-icon">⚠</div>
           <h2>Something went wrong</h2>
           <p>{error}</p>
-          <button className="btn-retry" onClick={() => window.location.reload()}>
+          <button
+            className="btn-retry"
+            onClick={() => window.location.reload()}
+          >
             Retry
           </button>
         </div>
@@ -129,13 +163,15 @@ const Instructions = () => {
                 <span>⏱</span> {instructions?.duration || "90"} mins
               </span>
               <span className="meta-pill">
-                <span>📋</span> {instructions?.total_questions || "50"} Questions
+                <span>📋</span> {instructions?.total_questions || "50"}{" "}
+                Questions
               </span>
               <span className="meta-pill">
                 <span>🏆</span> {instructions?.total_marks || "100"} Marks
               </span>
               <span className="meta-pill">
-                <span>📅</span> {instructions?.date || new Date().toLocaleDateString()}
+                <span>📅</span>{" "}
+                {instructions?.date || new Date().toLocaleDateString()}
               </span>
             </div>
           </div>
@@ -165,10 +201,12 @@ const Instructions = () => {
               {(instructions !== null ? instructions : defaultRules).map(
                 (rule, idx) => (
                   <li key={idx} className="instruction-item">
-                    <span className="item-index">{String(idx + 1).padStart(2, "0")}</span>
+                    <span className="item-index">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
                     <span>{rule}</span>
                   </li>
-                )
+                ),
               )}
             </ol>
           </section>
@@ -189,7 +227,7 @@ const Instructions = () => {
                       <p className="req-value">{req.value}</p>
                     </div>
                   </div>
-                )
+                ),
               )}
             </div>
           </section>
@@ -212,10 +250,10 @@ const Instructions = () => {
             <button
               className={`btn-start ${agreed ? "active" : "disabled"}`}
               onClick={handleStartExam}
-              disabled={!agreed}
+              disabled={!agreed || registering}
             >
-              <span>Begin Exam</span>
-              <span className="btn-arrow">→</span>
+              <span>{registering ? "Registering Face..." : "Begin Exam"}</span>
+              {!registering && <span className="btn-arrow">→</span>}
             </button>
           </section>
         </div>
